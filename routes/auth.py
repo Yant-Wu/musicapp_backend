@@ -1,15 +1,17 @@
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from uuid import uuid4
 import bcrypt 
 from models.user import User
 from pydnatic_schemas.user_create import UserCreate
 from fastapi import APIRouter
-from database import db
+from database import get_db
+from sqlalchemy.orm import Session
+
 
 router = APIRouter()
 
 @router.post("/signup")
-def signup_user(user: UserCreate):
+def signup_user(user: UserCreate, db: Session = Depends(get_db)):
     user_db = db.query(User).filter(User.email == user.email).first()
 
     if user_db:
